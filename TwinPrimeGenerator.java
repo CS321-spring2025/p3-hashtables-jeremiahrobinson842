@@ -1,6 +1,6 @@
 /**
  * The TwinPrimeGenerator class provides a method to generate a twin prime number
- * within a specified range. A twin prime is a prime number that is 2 away from another prime.
+ * within a specified range
  * 
  * @author Jeremiah Robinson
  */
@@ -35,6 +35,11 @@ public class TwinPrimeGenerator {
         if (num <= 1) {
             return false;
         }
+
+        if (num == 2) {
+            return true;
+        }
+
         for (int i = 2; i <= Math.sqrt(num); i++) {
             if (num % i == 0) {
                 return false;

@@ -1,139 +1,94 @@
-import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
-/**
- * The Hashtable class represents a generic hash table with open addressing and provides basic functionality
- *
- * @param <K> the type of keys maintained by this hashtable
- * @param <V> the type of mapped values
- * 
- * @author Jeremiah Robinson
- */
-public abstract class Hashtable<K, V> {
-    protected HashObject<K, V>[] table;
+public abstract class Hashtable {
+    protected HashObject[] table;
     protected int size;
-    protected int capacity;
 
-    /**
-     * Constructs a new Hashtable with the specified capacity
-     *
-     * @param capacity the capacity of the hashtable
-     */
-    public Hashtable(int capacity) {
-        this.capacity = capacity;
-        this.table = new HashObject[capacity];
-        this.size = 0;
+    public Hashtable(int size) {
+        this.size = size;
+        this.table = new HashObject[size];
     }
 
-    /**
-     * Probes the hashtable to find an index for the given key and probe number
-     *
-     * @param key the key to be hashed
-     * @param i the probe number
-     * @return the index in the hashtable for the given key and probe number
-     */
-    public abstract int probe(K key, int i);
+    public abstract int hash(Object key, int probeNum);
 
-    /**
-     * Inserts the specified key-value pair into the hashtable
-     * If the key already exists, updates the value and increments the frequency count
-     *
-     * @param key the key to be inserted
-     * @param value the value to be associated with the key
-     * @throws RuntimeException if the hashtable is full
-     */
-    public void insert(K key, V value) {
-        int i = 0;
-        int index;
-        do {
-            index = probe(key, i);
-            if (table[index] == null || table[index].isDeleted()) {
-                table[index] = new HashObject<>(key, value);
-                size++;
-                return;
+    protected int h1(Object key) {
+        return positiveMod(key.hashCode(), size);
+    }
+
+    public int insert(Object key) {
+        int probeCount = 0;
+    
+        for (int i = 0; i < size; i++) {
+            int index = hash(key, i);
+            if (table[index] == null) {
+                table[index] = new HashObject(key);
+                table[index].setProbeCount(probeCount + 1);
+                System.out.println("Inserted key: " + key + " at index: " + index + " with probe count: " + (probeCount + 1));
+                return probeCount + 1;
             } else if (table[index].getKey().equals(key)) {
-                table[index].setValue(value);
                 table[index].incrementFrequencyCount();
-                return;
+                System.out.println("Duplicate key: " + key + " found at index: " + index + ", incrementing frequency count.");
+                return -1; // Indicate duplicate
             }
-            i++;
-        } while (i < capacity);
-        throw new RuntimeException("Hashtable is full");
+            probeCount++;
+        }
+    
+        System.out.println("Table is full, could not insert key: " + key);
+        return -1; // Table is full
     }
+    
 
-    /**
-     * Searches for the value associated with the specified key in the hashtable
-     *
-     * @param key the key to be searched
-     * @return the value associated with the key, or null if the key is not found
-     */
-    public V search(K key) {
-        int i = 0;
-        int index;
-        do {
-            index = probe(key, i);
+    public int search(Object key) {
+        for (int i = 0; i < size; i++) {
+            int index = hash(key, i);
             if (table[index] == null) {
-                return null;
-            } else if (table[index].getKey().equals(key) && !table[index].isDeleted()) {
-                return table[index].getValue();
+                return -1; // Key not found
+            } else if (table[index].getKey().equals(key)) {
+                System.out.println("Duplicate found for key: " + key + ", incrementing frequency count.");
+                return i + 1;
             }
-            i++;
-        } while (i < capacity);
-        return null;
+        }
+        return -1;
     }
 
-    /**
-     * Deletes the key-value pair associated with the specified key from the hashtable
-     *
-     * @param key the key to be deleted
-     */
-    public void delete(K key) {
-        int i = 0;
-        int index;
-        do {
-            index = probe(key, i);
-            if (table[index] == null) {
-                return;
-            } else if (table[index].getKey().equals(key) && !table[index].isDeleted()) {
-                table[index].delete();
-                size--;
-                return;
+    protected int positiveMod(int dividend, int divisor) {
+        int remainder = dividend % divisor;
+        if (remainder < 0) {
+            remainder += divisor;
+        }
+        return remainder;
+    }
+
+    public int getDuplicateCount() {
+        int duplicateCount = 0;
+        for (HashObject obj : table) {
+            if (obj != null && obj.getFrequencyCount() > 1) {
+                duplicateCount += obj.getFrequencyCount() - 1;
             }
-            i++;
-        } while (i < capacity);
+        }
+        return duplicateCount;
     }
 
-    /**
-     * Returns the number of key-value pairs in the hashtable
-     *
-     * @return the number of key-value pairs in the hashtable
-     */
-    public int size() {
-        return size;
+    public int getInsertionCount() {
+        int insertionCount = 0;
+        for (HashObject obj : table) {
+            if (obj != null) {
+                insertionCount += obj.getProbeCount();
+            }
+        }
+        return insertionCount;
     }
 
-    /**
-     * Returns the capacity of the hashtable
-     *
-     * @return the capacity of the hashtable
-     */
-    public int capacity() {
-        return capacity;
-    }
-
-    /**
-     * Returns whether the hashtable is empty
-     *
-     * @return true if the hashtable is empty, false otherwise
-     */
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    /**
-     * Clears the hashtable, removing all key-value pairs
-     */
-    public void clear() {
-        Arrays.fill(table, null);
-        size = 0;
+    public void dumpToFile(String fileName) throws FileNotFoundException {
+        try (PrintWriter out = new PrintWriter(fileName)) {
+            for (int i = 0; i < table.length; i++) {
+                if (table[i] != null) {
+                    HashObject hashObj = table[i];
+                    out.println("table[" + i + "]: " + hashObj);
+                    System.out.println("Writing to file: table[" + i + "]: " + hashObj);
+                }
+            }
+        }
     }
 }

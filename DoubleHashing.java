@@ -7,15 +7,15 @@
  * 
  * @author Jeremiah Robinson
  */
-public class DoubleHashing<K, V> extends Hashtable<K, V> {
+public class DoubleHashing extends Hashtable {
 
     /**
      * Constructs a new DoubleHashing hashtable with the specified capacity
      *
      * @param capacity the capacity of the hashtable
      */
-    public DoubleHashing(int capacity) {
-        super(capacity);
+    public DoubleHashing(int size) {
+        super(size);
     }
 
     /**
@@ -24,8 +24,8 @@ public class DoubleHashing<K, V> extends Hashtable<K, V> {
      * @param key the key to be hashed
      * @return the result of the secondary hash function
      */
-    private int hash2(K key) {
-        return 1 + (key.hashCode() % (capacity - 2));
+    private int h2(Object key) {
+        return 1 + positiveMod(key.hashCode(), size - 2);
     }
 
     /**
@@ -36,7 +36,7 @@ public class DoubleHashing<K, V> extends Hashtable<K, V> {
      * @return the index in the hashtable for the given key and probe number
      */
     @Override
-    public int probe(K key, int i) {
-        return (key.hashCode() + i * hash2(key)) % capacity;
+    public int hash(Object key, int probeNum) {
+        return positiveMod(h1(key) + probeNum * h2(key), size);
     }
 }

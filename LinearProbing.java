@@ -7,15 +7,15 @@
  * 
  * @author Jeremiah Robinson
  */
-public class LinearProbing<K, V> extends Hashtable<K, V> {
+public class LinearProbing extends Hashtable {
 
     /**
      * Constructs a new LinearProbing hashtable with the specified capacity
      *
      * @param capacity the capacity of the hashtable
      */
-    public LinearProbing(int capacity) {
-        super(capacity);
+    public LinearProbing(int size) {
+        super(size);
     }
 
     /**
@@ -26,7 +26,7 @@ public class LinearProbing<K, V> extends Hashtable<K, V> {
      * @return the index in the hashtable for the given key and probe number
      */
     @Override
-    public int probe(K key, int i) {
-        return (key.hashCode() + i) % capacity;
+    public int hash(Object key, int probeNum) {
+        return positiveMod(h1(key) + probeNum, size);
     }
 }
