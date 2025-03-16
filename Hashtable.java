@@ -1,21 +1,51 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+/**
+ * The Hashtable class is an abstract class that provides the basic structure and functionality
+ * for a hash table with open addressing.
+ * 
+ * @author Jeremiah Robinson
+ */
 public abstract class Hashtable {
     protected HashObject[] table;
     protected int size;
 
+    /**
+     * Constructs a new Hashtable with the specified capacity
+     *
+     * @param size the capacity of the hashtable
+     */
     public Hashtable(int size) {
         this.size = size;
         this.table = new HashObject[size];
     }
 
+    /**
+     * Computes the hash value for the given key and probe number
+     *
+     * @param key the key to be hashed
+     * @param probeNum the probe number
+     * @return the index in the hashtable for the given key and probe number
+     */
     public abstract int hash(Object key, int probeNum);
 
+    /**
+     * Computes the primary hash function
+     *
+     * @param key the key to be hashed
+     * @return the result of the primary hash function
+     */
     protected int h1(Object key) {
         return positiveMod(key.hashCode(), size);
     }
 
+    /**
+     * Inserts the specified key into the hashtable
+     *
+     * @param key the key to be inserted
+     * @return the number of probes required to insert the key, or -1 if the key is a duplicate or the table is full
+     */
     public int insert(Object key) {
         int probeCount = 0;
     
@@ -38,7 +68,12 @@ public abstract class Hashtable {
         return -1; // Table is full
     }
     
-
+    /**
+     * Searches for the specified key in the hashtable
+     *
+     * @param key the key to be searched for
+     * @return the number of probes required to find the key, or -1 if the key is not found
+     */
     public int search(Object key) {
         for (int i = 0; i < size; i++) {
             int index = hash(key, i);
@@ -52,6 +87,13 @@ public abstract class Hashtable {
         return -1;
     }
 
+    /**
+     * Computes the positive modulus of the given dividend and divisor
+     *
+     * @param dividend the dividend
+     * @param divisor the divisor
+     * @return the positive modulus
+     */
     protected int positiveMod(int dividend, int divisor) {
         int remainder = dividend % divisor;
         if (remainder < 0) {
@@ -60,6 +102,11 @@ public abstract class Hashtable {
         return remainder;
     }
 
+    /**
+     * Returns the total number of duplicate keys in the hashtable
+     *
+     * @return the total number of duplicate keys
+     */
     public int getDuplicateCount() {
         int duplicateCount = 0;
         for (HashObject obj : table) {
@@ -70,6 +117,11 @@ public abstract class Hashtable {
         return duplicateCount;
     }
 
+    /**
+     * Returns the total number of insertions (probes) in the hashtable
+     *
+     * @return the total number of insertions
+     */
     public int getInsertionCount() {
         int insertionCount = 0;
         for (HashObject obj : table) {
@@ -80,6 +132,12 @@ public abstract class Hashtable {
         return insertionCount;
     }
 
+    /**
+     * Dumps the contents of the hashtable to the specified file
+     *
+     * @param fileName the name of the file to dump the contents to
+     * @throws FileNotFoundException if the file cannot be created or opened
+     */
     public void dumpToFile(String fileName) throws FileNotFoundException {
         try (PrintWriter out = new PrintWriter(fileName)) {
             for (int i = 0; i < table.length; i++) {
