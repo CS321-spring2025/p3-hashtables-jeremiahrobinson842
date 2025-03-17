@@ -54,11 +54,9 @@ public abstract class Hashtable {
             if (table[index] == null) {
                 table[index] = new HashObject(key);
                 table[index].setProbeCount(probeCount + 1);
-                System.out.println("Inserted key: " + key + " at index: " + index + " with probe count: " + (probeCount + 1));
                 return probeCount + 1;
             } else if (table[index].getKey().equals(key)) {
                 table[index].incrementFrequencyCount();
-                System.out.println("Duplicate key: " + key + " found at index: " + index + ", incrementing frequency count.");
                 return -1; // Indicate duplicate
             }
             probeCount++;
@@ -80,7 +78,6 @@ public abstract class Hashtable {
             if (table[index] == null) {
                 return -1; // Key not found
             } else if (table[index].getKey().equals(key)) {
-                System.out.println("Duplicate found for key: " + key + ", incrementing frequency count.");
                 return i + 1;
             }
         }
@@ -144,7 +141,6 @@ public abstract class Hashtable {
                 if (table[i] != null) {
                     HashObject hashObj = table[i];
                     out.println("table[" + i + "]: " + hashObj);
-                    System.out.println("Writing to file: table[" + i + "]: " + hashObj);
                 }
             }
         }

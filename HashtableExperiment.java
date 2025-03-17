@@ -262,13 +262,6 @@ public class HashtableExperiment {
             if (idx != -1) {
                 insertedObjects++;
             }
-            if (testArgs.debugLevel == 2) {
-                if (idx == -1) {
-                    System.out.println("Duplicate: " + key);
-                } else {
-                    System.out.println("Inserted: " + key);
-                }
-            }
         }
     }
 }

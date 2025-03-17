@@ -1,9 +1,6 @@
 /**
  * The DoubleHashing class extends the Hashtable class and implements the
  * double hashing strategy for open addressing in hash tables
- *
- * @param <K> the type of keys maintained by this hashtable
- * @param <V> the type of mapped values
  * 
  * @author Jeremiah Robinson
  */
